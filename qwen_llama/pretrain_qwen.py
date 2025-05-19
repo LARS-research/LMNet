@@ -21,7 +21,7 @@ tmodel=Qwen2ForCausalLM.from_pretrained(model_name)
 model = LMNetForCausalLM(tmodel.config,layer_list=[1,4,4,4,1],pl=0)#.from_pretrained(model_name)
 model.model=tmodel.model
 model.lm_head=tmodel.lm_head
-#model.freeze_transformer()
+model.freeze_transformer()
 '''model = LMNetForSequenceClassificationS(tmodel.config,layer_list=[1,2,1],pl=0)#.from_pretrained(model_name)
 for m in model.ms:
     m.load_state_dict(tmodel.model.state_dict())
