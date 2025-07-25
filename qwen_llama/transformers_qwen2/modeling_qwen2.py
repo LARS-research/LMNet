@@ -1878,7 +1878,7 @@ class LMNetForCausalLM(Qwen2PreTrainedModel, GenerationMixin):
             for j in range(self.layer_list[l+1]):
                 inp=0
                 for i in range(self.layer_list[l]):
-                    out=self.ws[self.lsid[l]+int(i*self.layer_list[l+1])+j](hidden_states=hidden_states,
+                    out=self.ws[self.lsid[l]+int(i*self.layer_list[l+1])+j](hidden_states=hsl_old[i],
                     attention_mask=attention_mask,
                     position_ids= position_ids,
                     past_key_value=past_key_values,
@@ -2159,7 +2159,7 @@ class LMNetForCausalLMS(Qwen2PreTrainedModel, GenerationMixin):
             for j in range(self.layer_list[l+1]):
                 inp=0
                 for i in range(self.layer_list[l]):
-                    out=self.ws[self.lsid[l]+int(i*self.layer_list[l+1])+j](hidden_states=hidden_states,
+                    out=self.ws[self.lsid[l]+int(i*self.layer_list[l+1])+j](hidden_states=hsl_old[i],
                     attention_mask=attention_mask,
                     position_ids= position_ids,
                     past_key_value=past_key_values,
