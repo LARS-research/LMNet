@@ -1876,7 +1876,7 @@ class LMNetForCausalLM(Qwen2PreTrainedModel, GenerationMixin):
         for l in range(self.layer_num-1):
             hsl_new=[]
             for j in range(self.layer_list[l+1]):
-                inp=0
+                inp=[]
                 for i in range(self.layer_list[l]):
                     out=self.ws[self.lsid[l]+int(i*self.layer_list[l+1])+j](hidden_states=hsl_old[i],
                     attention_mask=attention_mask,
@@ -1890,12 +1890,13 @@ class LMNetForCausalLM(Qwen2PreTrainedModel, GenerationMixin):
                     #if use_cache:
                     #    p = out[2 if output_attentions else 1]
                     #    pw[self.lsid[l]+int(i*self.layer_list[l+1])+j]=p
-                    inp+=a
+                    inp.append(a)
+                inp=torch.stack(inp).sum(dim=0)
                 outputs=self.model(input_ids=None,
                     attention_mask=attention_mask,
                     position_ids=position_ids,
                     past_key_values=past_key_values,
-                    inputs_embeds=a,
+                    inputs_embeds=inp,
                     use_cache=use_cache,
                     output_attentions=output_attentions,
                     output_hidden_states=output_hidden_states,
@@ -1963,6 +1964,8 @@ class LMNetForCausalLM(Qwen2PreTrainedModel, GenerationMixin):
             hidden_states=outputs.hidden_states,
             attentions=outputs.attentions,
         )
+
+
 
 class LMNetForCausalLMS(Qwen2PreTrainedModel, GenerationMixin):
     _tied_weights_keys = ["lm_head.weight"]
@@ -2157,7 +2160,7 @@ class LMNetForCausalLMS(Qwen2PreTrainedModel, GenerationMixin):
         for l in range(self.layer_num-1):
             hsl_new=[]
             for j in range(self.layer_list[l+1]):
-                inp=0
+                inp=[]
                 for i in range(self.layer_list[l]):
                     out=self.ws[self.lsid[l]+int(i*self.layer_list[l+1])+j](hidden_states=hsl_old[i],
                     attention_mask=attention_mask,
@@ -2171,7 +2174,8 @@ class LMNetForCausalLMS(Qwen2PreTrainedModel, GenerationMixin):
                     #if use_cache:
                     #    p = out[2 if output_attentions else 1]
                     #    pw[self.lsid[l]+int(i*self.layer_list[l+1])+j]=p
-                    inp+=a
+                    inp.append(a)
+                inp=torch.stack(inp).sum(dim=0)
                 outputs=self.ms[mid](input_ids=None,
                     attention_mask=attention_mask,
                     position_ids=position_ids,
@@ -2540,12 +2544,13 @@ class LMNetForSequenceClassification(Qwen2PreTrainedModel):
         for l in range(self.layer_num-1):
             hsl_new=[]
             for j in range(self.layer_list[l+1]):
-                inp=0
+                inp=[]
                 for i in range(self.layer_list[l]):
                     a,p=self.ws[self.lsid[l]+int(i*self.layer_list[l+1])+j](hsl_old[i],attention_mask=attention_mask,position_embeddings=pe)
                     pid+=1
                     present_list.append(p)
-                    inp+=a
+                    inp.append(a)
+                inp=torch.stack(inp).sum(dim=0)
                 outputs=self.model(input_ids=None,
                     attention_mask=attention_mask,
                     position_ids=position_ids,
@@ -2805,12 +2810,13 @@ class LMNetForSequenceClassificationS(Qwen2PreTrainedModel):
         for l in range(self.layer_num-1):
             hsl_new=[]
             for j in range(self.layer_list[l+1]):
-                inp=0
+                inp=[]
                 for i in range(self.layer_list[l]):
                     a,p=self.ws[self.lsid[l]+int(i*self.layer_list[l+1])+j](hsl_old[i],attention_mask=attention_mask,position_embeddings=pe)
                     pid+=1
                     present_list.append(p)
-                    inp+=a
+                    inp.append(a)
+                inp=torch.stack(inp).sum(dim=0)
                 outputs=self.ms[mid](input_ids=None,
                     attention_mask=attention_mask,
                     position_ids=position_ids,
