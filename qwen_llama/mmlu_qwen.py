@@ -7,7 +7,7 @@ import numpy as np
 from safetensors.torch import load_file
 #os.environ['CUDA_VISIBLE_DEVICES'] = '0,'
 # Load dataset
-#DS_SKIP_CUDA_CHECK=1 deepspeed --master_port=12327 --include localhost:0 src/mqw.py
+#DS_SKIP_CUDA_CHECK=1 deepspeed --master_port=12327 --include localhost:0,1,2,3 src/mqw.py
 dataset = load_dataset("cais/mmlu", "all")#['test', 'validation', 'dev', 'auxiliary_train'])
 
 dataset = concatenate_datasets([dataset['validation'],dataset['dev'],dataset['auxiliary_train']])
@@ -70,7 +70,7 @@ tokenized_datasets_test = testset.map(preprocess_function, batched=True)
 from transformers import Trainer, TrainingArguments
 
 training_args = TrainingArguments(
-    output_dir="./LMN_mmlu_qwen/0.B_l121_ft",
+    output_dir="./LMN_mmlu_qwen/0.5B_l121_ft",
     evaluation_strategy="epoch",
     #eval_steps=100,
     #eval_accumulation_steps=1,
@@ -85,7 +85,7 @@ training_args = TrainingArguments(
     logging_strategy="steps",
     save_strategy="epoch",
     #save_steps=20000,
-    fp16=True,  
+    bf16=True,  
     #deepspeed=''
 )
 

@@ -202,7 +202,7 @@ class WBlock_mlp(nn.Module):
         self.c_proj = Conv1D( nx,int(nx/2))
         self.act = gelu
 
-    def forward(self, hidden_states,attention_mask=None):
+    def forward(self, hidden_states,attention_mask=None,position_embeddings=None):
         x=hidden_states
         m=self.act(self.c_fc(x))
         m=self.act(self.c_proj(m))
@@ -2124,8 +2124,8 @@ class LlamaForSequenceClassification(LlamaPreTrainedModel):
     LLAMA_START_DOCSTRING,
 )
 class LMNetForSequenceClassification(LlamaPreTrainedModel):
-    def __init__(self, config,layer_list=[1,2,1],pl=32):
-        super().__init__(config,layer_list=[1,2,1],pl=32)
+    def __init__(self, config,layer_list=[1,2,1],pl=0):
+        super().__init__(config,layer_list=[1,2,1],pl=0)
         self.num_labels = config.num_labels
         self.model = LlamaModel(config)
         self.score = nn.Linear(config.hidden_size, self.num_labels, bias=False)

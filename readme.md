@@ -1,7 +1,8 @@
-# Boosting Collective Intelligence through Densely Communicated Large Language Models
+# Learning Communication between Language Models through Dense Vectors
+Please check https://anonymous.4open.science/r/LMNet_Code-231E for latest updates.
 
-##  Scaling for General Intelligence
-* To scale for general intelligence by pre-training a LMNet on large-sclae datasets, run "python qwen_llama/pretrain_qwen.py" after customizing the dataset and training_args.
+##  Improving General Intelligence
+* To improve general intelligence by training a LMNet on large-sclae datasets, run "python qwen_llama/pretrain_qwen.py" after customizing the dataset and training_args.
 
 ##  Customizing with Limited Data
 * To customize with limited data, run "python qwen_llama/mmlu_qwen.py" or "python qwen_llama/mmlu_llama.py".

@@ -7,7 +7,7 @@ import numpy as np
 from safetensors.torch import load_file
 #os.environ['CUDA_VISIBLE_DEVICES'] = '0,1,2,3,4,5,6,7,8'
 # Load dataset
-#DS_SKIP_CUDA_CHECK=1 deepspeed --num_gpus=2 src/mllama.py
+#DS_SKIP_CUDA_CHECK=1 deepspeed --num_gpus=4 src/mllama.py
 dataset = load_dataset("cais/mmlu", "all")#['test', 'validation', 'dev', 'auxiliary_train'])
 
 
@@ -85,7 +85,7 @@ training_args = TrainingArguments(
     logging_steps=1000,
     logging_strategy="steps",
     save_strategy="epoch",
-    fp16=True,  
+    bf16=True,  
     #deepspeed=''
 )
 

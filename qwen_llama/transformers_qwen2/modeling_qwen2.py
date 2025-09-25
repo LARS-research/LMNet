@@ -334,6 +334,7 @@ class WBlock2(nn.Module):
                 past_seen_tokens, past_seen_tokens + x.shape[1], device=x.device
             )
         causal_mask=self._update_causal_mask(attention_mask,x,cache_position,None,self.config.output_attentions)
+        
         layer_outputs = self.model(
                     x,
                     attention_mask=causal_mask,
@@ -345,14 +346,14 @@ class WBlock2(nn.Module):
         return x,None
 
 class WBlock_mlp(nn.Module):
-    def __init__(self, config, layer_idx=None, scale=False):
+    def __init__(self, config, layer_idx=None, scale=False,):
         super(WBlock_mlp, self).__init__()
         nx = config.hidden_size
         self.c_fc = Conv1D( int(nx/2),nx)
         self.c_proj = Conv1D( nx,int(nx/2))
         self.act = gelu
 
-    def forward(self, hidden_states,attention_mask=None):
+    def forward(self, hidden_states,attention_mask=None,position_embeddings=None):
         x=hidden_states
         m=self.act(self.c_fc(x))
         m=self.act(self.c_proj(m))
@@ -2388,8 +2389,8 @@ class Qwen2ForSequenceClassification(Qwen2PreTrainedModel):
     QWEN2_START_DOCSTRING,
 )
 class LMNetForSequenceClassification(Qwen2PreTrainedModel):
-    def __init__(self, config,layer_list=[1,2,1],pl=32):
-        super().__init__(config,layer_list=[1,2,1],pl=32)
+    def __init__(self, config,layer_list=[1,2,1],pl=0):
+        super().__init__(config,layer_list=[1,2,1],pl=0)
         self.num_labels = config.num_labels
         self.model = Qwen2Model(config)
         self.score = nn.Linear(config.hidden_size, self.num_labels, bias=False)
@@ -2401,7 +2402,7 @@ class LMNetForSequenceClassification(Qwen2PreTrainedModel):
         self.lsid=[]
         t=0
         for i in range(self.layer_list[0]):
-            self.ws.append(WBlock2(config,t+config.num_hidden_layers))
+            self.ws.append(WBlock_mlp(config,t+config.num_hidden_layers))
             t+=1
         for l in range (self.layer_num-1):
             self.lsid.append(t)
@@ -2570,7 +2571,7 @@ class LMNetForSequenceClassification(Qwen2PreTrainedModel):
             hsl_old=hsl_new
         if self.layer_num>1:
             hidden_states=hsl_new[0] 
-            hidden_states+=hs0
+            #hidden_states+=hs0
         else:
             hidden_states=hs0
 
