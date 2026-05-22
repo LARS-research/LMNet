@@ -1,5 +1,7 @@
-# Learning Communication between Language Models through Dense Vectors
-Please check https://anonymous.4open.science/r/LMNet_Code-231E for latest updates.
+# Language Model Networks: Supervision-Efficient Learning through Dense Communication
+ICML 2026
+
+https://arxiv.org/abs/2505.12741
 
 ##  Improving General Intelligence
 * To improve general intelligence by training a LMNet on large-sclae datasets, run "python qwen_llama/pretrain_qwen.py" after customizing the dataset and training_args.
