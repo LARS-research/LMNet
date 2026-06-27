@@ -5,7 +5,7 @@ from datasets import load_dataset,concatenate_datasets
 import os
 import numpy as np
 from safetensors.torch import load_file
-#os.environ['CUDA_VISIBLE_DEVICES'] = '0,'
+os.environ['CUDA_VISIBLE_DEVICES'] = '3,4,5,6'
 # Load dataset
 #DS_SKIP_CUDA_CHECK=1 deepspeed --master_port=12327 --include localhost:0,1,2,3 src/mqw.py
 dataset = load_dataset("cais/mmlu", "all")#['test', 'validation', 'dev', 'auxiliary_train'])
@@ -20,15 +20,14 @@ from transformers_qwen2.configuration_qwen2 import Qwen2Config
 model_name = "Qwen/Qwen2.5-0.5B"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 tokenizer.pad_token = tokenizer.eos_token
-#model = Qwen2ForSequenceClassification.from_pretrained(model_name, num_labels=4)
 tmodel=Qwen2ForSequenceClassification.from_pretrained(model_name,num_labels=4)
-model = LMNetForSequenceClassification(tmodel.config,layer_list=[1,2,1],pl=0)#.from_pretrained(model_name)
-model.model=tmodel.model
+'''model = LMNetForSequenceClassification(tmodel.config,layer_list=[1,2,1],pl=0)#.from_pretrained(model_name)
+model.model=tmodel.model'''
 #model.freeze_transformer()
-'''model = LMNetForSequenceClassificationS(tmodel.config,layer_list=[1,2,1],pl=0)#.from_pretrained(model_name)
+model = LMNetForSequenceClassificationS(tmodel.config,layer_list=[1,2,1],pl=0)#.from_pretrained(model_name)
 for m in model.ms:
     m.load_state_dict(tmodel.model.state_dict())
-del tmodel'''
+del tmodel
 model.config.pad_token_id=tokenizer.pad_token_id
 
 
@@ -41,6 +40,7 @@ def preprocess_function(examples, max_length=512):
         input_text = f"Question: {question}\nOptions:\n"
         for idx, option in enumerate(choices):
             input_text += f"{idx}. {option}\n"
+        input_text += "Answer: "
         
         label = answer
         
@@ -71,11 +71,11 @@ from transformers import Trainer, TrainingArguments
 
 training_args = TrainingArguments(
     output_dir="./LMN_mmlu_qwen/0.5B_l121_ft",
-    evaluation_strategy="epoch",
+    eval_strategy="epoch",
     #eval_steps=100,
     #eval_accumulation_steps=1,
-    learning_rate=1e-6,
-    per_device_train_batch_size=4,
+    learning_rate=5e-7,
+    per_device_train_batch_size=8,
     per_device_eval_batch_size=8,
     num_train_epochs=4,
     weight_decay=1e-6,
@@ -83,7 +83,7 @@ training_args = TrainingArguments(
     logging_dir='./logs',
     logging_steps=1000,
     logging_strategy="steps",
-    save_strategy="epoch",
+    save_strategy="no",
     #save_steps=20000,
     bf16=True,  
     #deepspeed=''
@@ -110,4 +110,3 @@ print(sum(p.numel() for p in trainer.model.parameters() if p.requires_grad))
 
 print(training_args.output_dir)
 trainer.train()
-

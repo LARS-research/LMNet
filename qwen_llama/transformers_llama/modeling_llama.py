@@ -1926,7 +1926,7 @@ class LMNetForCausalLM(LlamaPreTrainedModel, GenerationMixin):
                     #    p = out[2 if output_attentions else 1]
                     #    pw[self.lsid[l]+int(i*self.layer_list[l+1])+j]=p
                     inp.append(a)
-                inp=torch.stack(inp).sum(dim=0)
+                inp=torch.stack(inp).mean(dim=0)
                 outputs=self.model(input_ids=None,
                     attention_mask=attention_mask,
                     position_ids=position_ids,
@@ -2286,7 +2286,7 @@ class LMNetForSequenceClassification(LlamaPreTrainedModel):
                     pid+=1
                     present_list.append(p)
                     inp.append(a)
-                inp=torch.stack(inp).sum(dim=0)
+                inp=torch.stack(inp).mean(dim=0)
                 outputs=self.model(input_ids=None,
                     attention_mask=attention_mask,
                     position_ids=position_ids,
@@ -2532,7 +2532,7 @@ class LMNetForSequenceClassificationS(LlamaPreTrainedModel):
                     pid+=1
                     present_list.append(p)
                     inp.append(a)
-                inp=torch.stack(inp).sum(dim=0)
+                inp=torch.stack(inp).mean(dim=0)
                 outputs=self.ms[mid](input_ids=None,
                     attention_mask=attention_mask,
                     position_ids=position_ids,

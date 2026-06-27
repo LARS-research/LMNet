@@ -1892,7 +1892,7 @@ class LMNetForCausalLM(Qwen2PreTrainedModel, GenerationMixin):
                     #    p = out[2 if output_attentions else 1]
                     #    pw[self.lsid[l]+int(i*self.layer_list[l+1])+j]=p
                     inp.append(a)
-                inp=torch.stack(inp).sum(dim=0)
+                inp=torch.stack(inp).mean(dim=0)
                 outputs=self.model(input_ids=None,
                     attention_mask=attention_mask,
                     position_ids=position_ids,
@@ -2176,12 +2176,12 @@ class LMNetForCausalLMS(Qwen2PreTrainedModel, GenerationMixin):
                     #    p = out[2 if output_attentions else 1]
                     #    pw[self.lsid[l]+int(i*self.layer_list[l+1])+j]=p
                     inp.append(a)
-                inp=torch.stack(inp).sum(dim=0)
+                inp=torch.stack(inp).mean(dim=0)
                 outputs=self.ms[mid](input_ids=None,
                     attention_mask=attention_mask,
                     position_ids=position_ids,
                     past_key_values=past_key_values,
-                    inputs_embeds=a,
+                    inputs_embeds=inp,
                     use_cache=use_cache,
                     output_attentions=output_attentions,
                     output_hidden_states=output_hidden_states,
@@ -2551,7 +2551,7 @@ class LMNetForSequenceClassification(Qwen2PreTrainedModel):
                     pid+=1
                     present_list.append(p)
                     inp.append(a)
-                inp=torch.stack(inp).sum(dim=0)
+                inp=torch.stack(inp).mean(dim=0)
                 outputs=self.model(input_ids=None,
                     attention_mask=attention_mask,
                     position_ids=position_ids,
@@ -2817,7 +2817,7 @@ class LMNetForSequenceClassificationS(Qwen2PreTrainedModel):
                     pid+=1
                     present_list.append(p)
                     inp.append(a)
-                inp=torch.stack(inp).sum(dim=0)
+                inp=torch.stack(inp).mean(dim=0)
                 outputs=self.ms[mid](input_ids=None,
                     attention_mask=attention_mask,
                     position_ids=position_ids,
@@ -2838,7 +2838,7 @@ class LMNetForSequenceClassificationS(Qwen2PreTrainedModel):
             hsl_old=hsl_new
         if self.layer_num>1:
             hidden_states=hsl_new[0] 
-            hidden_states+=hs0
+            #hidden_states+=hs0
         else:
             hidden_states=hs0
 
